@@ -2,6 +2,7 @@
 	margin: 0;
 	padding: 0;
 	font-family: sans-serif;
+	scroll-behavior: smooth;
 }
 .hero{
 	position: relative;
@@ -12,16 +13,19 @@
 
 nav{
 	display: flex;
-	width: 84%;
+	width: 95%;
 	margin: auto;
-	padding: 20px 0;
+	padding: 10x 0;
 	align-items: center;
 	justify-content: space-between;
+	border-top:2px solid #2ecc71;
+	border-bottom:2px solid #2ecc71;
+	border-radius: 10px;
 }
 .logo{
 	display: flex;
-	width: 60px;
-	height: 60px;
+	width: 65px;
+	height: 65px;
 }
 
 nav ul li{
@@ -34,12 +38,14 @@ nav ul li a{
 	text-decoration: none;
 	color: #000;
 	font-weight: bold;
+	font-size: 15px;
+	letter-spacing: 1px;
 	transition: bottom 1s, left 1s;
 }
 
 nav ul li a:hover{
 	color: red;
-	text-shadow: 2px 2px 4px #212121;
+	text-shadow: 1px 2px 3px #212121;
 	
 }
 
@@ -51,8 +57,9 @@ nav ul li a:hover{
 .details h1{
 	font-size: 50px;
 	color: #212121;
-	margin-bottom: 20px;
 }
+
+
 
 span{
 	color: orange;
@@ -73,11 +80,61 @@ span{
 	margin: 30px 0;
 	border-radius: 5px;
 }
+
+.About{
+	margin-left: 65%;
+	margin-top: 20%;
+	margin-bottom: 50px;
+}
+
+.About h1{
+	font-size: 50px;
+	color: #212121;
+}
+
+.About pre{
+	color: #555;
+	line-height: 22px;
+}
+
+.Portfolio{
+	margin-left: 2%;
+	margin-top: 20%;
+	margin-bottom: 50px;
+}
+
+.Portfolio h1{
+	margin-left: 4%;
+	font-size: 50px;
+	color: #212121;
+}
+
+.Portfolio h2{
+	margin-left: 6%;
+	font-size: 25px;
+	color: #212121;
+	line-height: 25px;
+}
+
+.Portfolio h3{
+	text-decoration: underline;
+	margin-left: 8%;
+	font-size: 17px;
+	color: #212121;
+	line-height: 40px;
+}
+
+.Portfolio pre{
+	margin-left: 9%;
+	color: #555;
+	line-height: 25px;
+}
+
 .images{
 	width: 45%;
-	height: 80%;
+	height: 500px;
 	position: absolute;
-	bottom: 0;
+	top: 100px;
 	right: 100px;
 }
 
@@ -96,3 +153,41 @@ span{
 	left: 45%;
 }
 
+
+footer {
+	background-color:#333;
+	color:#F00;
+	text-align:center;
+	padding-top: 5px;
+	padding-bottom: 0px;
+	width: 100%;
+	bottom: 0;
+	position: fixed;
+}
+.top {
+	float:right;
+	padding: 15px;
+	font-size: 15px;
+	color:#C69;
+	background-color:#333;
+}
+
+.fa {
+	padding: 12px;
+	width: 15px;
+	text-align: center;
+	text-decoration: none;
+	border-radius: 50%;
+	color: white;
+}
+.fa:hover{
+	opacity:	0.7;
+}
+
+.fa-facebook {
+	background: #3B5998;
+}
+
+.fa-instagram {
+	background: #125688;
+}
