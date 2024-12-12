@@ -141,17 +141,87 @@ span{
 .images img{
 	height: 100%;
 	position: absolute;
-	left: 50%;
 	bottom: 0;
+	left: 50%;
 	transform : translateX(-50%);
 	transition: bottom 1s, left 1s;
 }
+
+@keyframes appear{
+	from {	
+			opacity : 0;
+			scale	: 0.8;
+		}
+	to {	
+			opacity : 1;
+			scale	: 1;
+		}
+}
+
 .images:hover .shape{
-	bottom: 40px;
+	bottom: 20px;
 }
 .images:hover .me{
 	left: 45%;
 }
+
+
+
+.images2{
+	width: 45%;
+	height: 500px;
+	position: absolute;
+	top: 750px;
+	left: -200px;
+}
+
+.images2 img{
+	height: 100%;
+	position: absolute;
+	bottom: 0;
+	left: 90%;
+	transform : translateX(-50%);
+	transition: bottom 1s, left 1s;
+	animation: appear linear;
+	animation-timeline: view();
+	animation-range: entry 0;
+}
+
+.images2:hover .shape{
+	bottom: 10px;
+}
+.images2:hover .me{
+	left: 87%;
+}
+
+.images3{
+	width: 45%;
+	height: 1300px;
+	position: absolute;
+	top: 1350px;
+	right: 0px;
+}
+
+.images3 img{
+	height: 100%;
+	position: absolute;
+	bottom: 0;
+	left: 60%;
+	transform : translateX(-50%);
+	transition: bottom 1s, left 1s;
+	animation: appear linear;
+	animation-timeline: view();
+	animation-range: entry 0;
+}
+
+.images3:hover .shape{
+	bottom: 20px;
+}
+.images3:hover .me{
+	left: 55%;
+}
+
+
 
 
 footer {
@@ -190,4 +260,8 @@ footer {
 
 .fa-instagram {
 	background: #125688;
+}
+
+.fa-google {
+	background: #EA4335;
 }
