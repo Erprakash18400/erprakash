@@ -206,7 +206,7 @@ span{
 	height: 100%;
 	position: absolute;
 	bottom: 0;
-	left: 75%;
+	left: 50%;
 	transform : translateX(-50%);
 	transition: bottom 1s, left 1s;
 	animation: appear linear;
@@ -218,7 +218,7 @@ span{
 	bottom: 20px;
 }
 .images3:hover .me{
-	left: 55%;
+	left: 45%;
 }
 
 
