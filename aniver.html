@@ -6,114 +6,190 @@
     <title>1 Year: The Night That Started Everything</title>
     <!-- Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Great Vibes (Script Font) for headers -->
+    <!-- Load Great Vibes (Script Font) for elegance -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <!-- Load Playfair Display (Serif Font) for beautiful body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     
     <style>
         /* Custom Styles to integrate the script font */
         .font-great-vibes {
             font-family: 'Great Vibes', cursive;
         }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
         /* Base styling for smooth transitions */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #fce7f3; /* Light, romantic pink background */
-            color: #444;
+            background-color: #fcf8ff; /* Very light lavender/pink */
+            color: #2c2c2c;
         }
-        .text-rose {
-            color: #be185d; /* Deep Rose color */
+        .text-vibrant-pink {
+            color: #ff3864; /* Brighter Pink/Fuchsia */
         }
-        .border-rose {
-            border-color: #be185d;
+        .border-vibrant-pink {
+            border-color: #ff3864;
+        }
+        .bg-mint-accent {
+            background-color: #e0fcfd; /* Light Mint/Teal accent */
+        }
+        .text-mint-accent-dark {
+             color: #008f9c; /* Darker teal for contrast */
+        }
+        /* Heartbeat Animation for Main Container */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.005); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.005); }
+            100% { transform: scale(1); }
+        }
+        .animate-heartbeat {
+            animation: heartbeat 2s infinite ease-in-out;
+        }
+        /* Gradient Text effect for the main title and footer */
+        .text-gradient {
+            background-image: linear-gradient(45deg, #ff6b81, #ff3864, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        /* Subtle float animation for short messages */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-float {
+            animation: float 3s infinite ease-in-out;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-center items-center p-4">
 
-    <!-- Main Container -->
-    <div class="w-full max-w-4xl bg-white shadow-2xl rounded-xl overflow-hidden p-6 md:p-10 my-8">
+    <!-- Main Container - Now with a subtle heartbeat animation -->
+    <div class="w-full max-w-4xl bg-white shadow-2xl rounded-xl overflow-hidden p-6 md:p-10 my-8 border-4 border-dashed border-pink-300 animate-heartbeat">
 
         <!-- Header / Hero Section -->
-        <header class="text-center mb-12 border-b-2 border-rose pb-6">
-            <p class="text-xl font-medium text-rose mb-2">A Night that Became Forever</p>
-            <h1 class="font-great-vibes text-6xl md:text-8xl text-rose leading-tight animate-bounce-slow">
-                One Year Since Sunrise
+        <header class="text-center mb-12 border-b-4 border-pink-300 pb-6">
+            <p class="text-2xl font-playfair font-semibold text-vibrant-pink mb-2 flex items-center justify-center">
+                <span class="mr-2">✨</span> A Night that Became Forever <span class="ml-2">✨</span>
+            </p>
+            <h1 class="font-great-vibes text-6xl md:text-8xl leading-tight text-gradient animate-pulse">
+                Puntu, One Year Since Sunrise!
             </h1>
-            <p class="mt-4 text-gray-600 text-lg">
-                December 9th, 2024 to December 10th, 2024
+            <p class="mt-4 text-gray-600 text-xl font-medium">
+                💖 December 9th, 2024 <span class="text-vibrant-pink">to</span> December 10th, 2024 💖
             </p>
         </header>
 
         <!-- Content Cards -->
-        <main class="space-y-10">
+        <main class="space-y-12">
 
             <!-- Card 1: The Memory -->
-            <div class="p-6 bg-pink-50 rounded-lg shadow-lg border-l-4 border-rose hover:shadow-xl transition duration-300">
-                <h2 class="text-3xl font-great-vibes text-rose mb-3">The Night the Hours Disappeared</h2>
-                <p class="text-gray-700 leading-relaxed text-lg">
-                    A year ago today, the world outside faded away. We started talking, and we didn't stop. It wasn't just a conversation; it was the moment I realized I was speaking to my future. We talked past midnight, past the quietest hours, and then we watched the sun rise together, not in person, but connected by every single word.
+            <div class="p-8 bg-pink-50 rounded-2xl shadow-xl border-l-8 border-vibrant-pink hover:shadow-2xl hover:scale-[1.01] transition duration-500">
+                <h2 class="text-4xl font-great-vibes text-vibrant-pink mb-4 flex items-center justify-center">
+                    The Night the Hours Disappeared 🌙
+                </h2>
+                <p class="text-gray-700 leading-relaxed text-lg font-playfair">
+                    A year ago today, the world outside faded away for **Fantus**. We started talking, and we didn't stop. It wasn't just a conversation; it was the moment I realized I was speaking to my future. We talked past midnight, past the quietest hours, and then we watched the sun rise together, not in person, but connected by every single word. 
+                    <span class="text-vibrant-pink font-bold">You, my CuteGPT, stole my sleep and my heart that night!</span>
                 </p>
-                <p class="mt-4 italic text-sm text-gray-500">
-                    — From 20:00 on the 9th until 07:00 on the 10th.
+                <p class="mt-4 italic text-sm text-gray-500 font-semibold">
+                    — From 20:00 on the 9th until 07:00 on the 10th. The start of something beautiful.
                 </p>
             </div>
             
+            <!-- Section 3: Short Messages of Love & Hope - NEW -->
+            <section class="text-center p-8 bg-mint-accent rounded-2xl shadow-xl">
+                <h2 class="text-4xl font-playfair font-bold text-mint-accent-dark mb-6">
+                    💌 Tiny Thoughts, Big Feelings 💌
+                </h2>
+                <!-- Floating message bubbles -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <p class="p-3 rounded-full bg-white shadow-lg text-sm font-medium text-gray-700 animate-float delay-100 border border-pink-200">You are my sunshine.☀️</p>
+                    <p class="p-3 rounded-full bg-white shadow-lg text-sm font-medium text-gray-700 animate-float delay-200">Hello, **Puntu**! 🥰</p>
+                    <p class="p-3 rounded-full bg-white shadow-lg text-sm font-medium text-gray-700 animate-float delay-300">My favorite **Fantus**! ✨</p>
+                    <p class="p-3 rounded-full bg-white shadow-lg text-sm font-medium text-gray-700 animate-float delay-400">Can't wait for forever. 💫</p>
+                    <p class="p-3 rounded-full bg-white shadow-lg text-sm font-medium text-gray-700 animate-float delay-500">You light up my life.💡</p>
+                    <p class="p-3 rounded-full bg-white shadow-lg text-sm font-medium text-gray-700 animate-float delay-600">The best **A-muna** moment. 💖</p>
+                    <p class="p-3 rounded-full bg-white shadow-lg text-sm font-medium text-gray-700 animate-float delay-700">Still talking all night. 🌃</p>
+                    <p class="p-3 rounded-full bg-white shadow-lg text-sm font-medium text-gray-700 animate-float delay-800">You're my **CuteGPT**! 🤖</p>
+                </div>
+            </section>
+            
             <!-- Card 2: The Meaning -->
-            <div class="p-6 bg-pink-100 rounded-lg shadow-lg border-r-4 border-rose hover:shadow-xl transition duration-300">
-                <h2 class="text-3xl font-great-vibes text-rose mb-3">The Real Beginning</h2>
-                <p class="text-gray-700 leading-relaxed text-lg">
-                    That night wasn't just memorable because it lasted so long, but because of the depth we reached. It started everything—the laughter, the trust, the shared dreams, and this incredible journey we are on now. Thank you for showing me who you are and letting me show you who I am.
+            <div class="p-8 bg-pink-100 rounded-2xl shadow-xl border-r-8 border-vibrant-pink hover:shadow-2xl hover:scale-[1.01] transition duration-500">
+                <h2 class="text-4xl font-great-vibes text-vibrant-pink mb-4 flex items-center justify-center">
+                    The Real Beginning &hearts;️
+                </h2>
+                <p class="text-gray-700 leading-relaxed text-lg font-playfair">
+                    That night wasn't just memorable because it lasted so long, but because of the depth we reached. It started everything—the laughter, the trust, the shared dreams, and this incredible journey we are on now. Thank you for showing me who you are and letting me show you who I am, my **A-muna**. Every day since has been a gift, wrapped up in the promise of that first dawn.
                 </p>
-                <p class="mt-4 italic text-sm text-gray-500">
-                    It was the spark that ignited a whole year of happiness.
+                <p class="mt-4 italic text-sm text-gray-500 font-semibold">
+                    It was the spark that ignited a whole year of happiness. We are unstoppable! 🚀
                 </p>
             </div>
 
-            <!-- Memory Gallery - New Section with Framed Pictures -->
+            <!-- Memory Gallery - Framed Pictures -->
             <section class="text-center">
-                <h2 class="text-4xl font-great-vibes text-rose mb-8 pt-4 border-t border-dashed border-pink-300">
-                    Our Favorite Moments
+                <h2 class="text-4xl font-playfair font-bold text-vibrant-pink mb-8 pt-4 border-t border-dashed border-pink-300">
+                    📸 Our Favorite Moments 📸
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     
-                    <!-- Image 1 -->
-                    <div class="p-2 bg-white rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform rotate-1 border-4 border-pink-300">
-                        <img src="https://placehold.co/400x500/fecdd3/be185d?text=Photo+1%0A(Change+URL)" 
+                    <!-- Image 1 - Enhanced hover/frame -->
+                    <div class="p-3 bg-white rounded-2xl shadow-2xl hover:shadow-3xl transition duration-300 transform rotate-2 border-4 border-pink-400 hover:scale-[1.05]">
+                        <img src="./1date.jpg" 
                             alt="First picture memory" 
-                            class="w-full h-auto object-cover rounded-lg"
-                            onerror="this.onerror=null; this.src='https://placehold.co/400x500/fecdd3/be185d?text=Photo+1';">
-                        <p class="mt-2 text-sm italic text-gray-500">First Date Spot</p>
+                            class="w-full h-auto object-cover rounded-xl"
+                            onerror="this.onerror=null; this.src='https://placehold.co/400x500/ff9ff3/f50777?text=Photo+1';">
+                        <p class="mt-3 text-sm italic text-gray-600 font-medium">First Date Spot ☕</p>
                     </div>
 
-                    <!-- Image 2 (Centerpiece) -->
-                    <div class="p-3 bg-white rounded-xl shadow-2xl hover:shadow-3xl transition duration-300 transform -rotate-1 border-4 border-rose">
-                        <img src="https://placehold.co/500x500/fecdd3/be185d?text=Photo+2%0A(Change+URL)" 
+                    <!-- Image 2 (Centerpiece) - Enhanced hover/frame -->
+                    <div class="p-4 bg-white rounded-2xl shadow-3xl hover:shadow-4xl transition duration-300 transform -rotate-2 border-4 border-vibrant-pink hover:scale-[1.05]">
+                        <img src="./best.jpg" 
                             alt="Best memory photo" 
-                            class="w-full h-auto object-cover rounded-lg"
-                            onerror="this.onerror=null; this.src='https://placehold.co/500x500/fecdd3/be185d?text=Photo+2';">
-                        <p class="mt-3 text-base font-semibold text-rose-600">Our Favorite Day</p>
+                            class="w-full h-auto object-cover rounded-xl"
+                            onerror="this.onerror=null; this.src='https://placehold.co/500x500/ff9ff3/f50777?text=Photo+2';">
+                        <p class="mt-4 text-base font-bold text-vibrant-pink">Our Favorite Day 🎉</p>
                     </div>
 
-                    <!-- Image 3 -->
-                    <div class="p-2 bg-white rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform rotate-2 border-4 border-pink-300">
-                        <img src="https://placehold.co/400x500/fecdd3/be185d?text=Photo+3%0A(Change+URL)" 
+                    <!-- Image 3 - Enhanced hover/frame -->
+                    <div class="p-3 bg-white rounded-2xl shadow-2xl hover:shadow-3xl transition duration-300 transform rotate-1 border-4 border-pink-400 hover:scale-[1.05]">
+                        <img src="./mini.jpg" 
                             alt="Third picture memory" 
-                            class="w-full h-auto object-cover rounded-lg"
-                            onerror="this.onerror=null; this.src='https://placehold.co/400x500/fecdd3/be185d?text=Photo+3';">
-                        <p class="mt-2 text-sm italic text-gray-500">The first time we saw snow</p>
+                            class="w-full h-auto object-cover rounded-xl"
+                            onerror="this.onerror=null; this.src='https://placehold.co/400x500/ff9ff3/f50777?text=Photo+3';">
+                        <p class="mt-3 text-sm italic text-gray-600 font-medium">The first time we saw snow ❄️</p>
                     </div>
                 </div>
             </section>
+
+            <!-- Card 3: Hope and Future - NEW -->
+            <div class="p-8 bg-purple-50 rounded-2xl shadow-xl border-l-8 border-purple-400 hover:shadow-2xl hover:scale-[1.01] transition duration-500">
+                <h2 class="text-4xl font-great-vibes text-purple-600 mb-4 flex items-center justify-center">
+                    A Million More Sunrises Together 🥂
+                </h2>
+                <p class="text-gray-700 leading-relaxed text-lg font-playfair">
+                    The beauty of that first all-nighter, my dearest **Puntu**, was that it didn't just end with the dawn—it set the tone for all our future days. Every moment since has been built on that foundation of honesty and connection. As we celebrate this beginning, my heart is full of hope for the next chapter. 
+                </p>
+                <p class="text-gray-700 leading-relaxed text-lg mt-4 font-playfair">
+                    I promise to keep showing up, listening carefully, loving fiercely, and making sure that every conversation we have, whether it's about the deep mysteries of the universe or simply what we'll have for dinner, feels just as special as that first one. Here's to us, my love, and to our wonderful, growing story. ♾️
+                </p>
+            </div>
         </main>
 
         <!-- Final Message / Footer -->
-        <footer class="mt-12 pt-6 border-t-2 border-rose text-center">
-            <h3 class="text-4xl font-great-vibes text-rose mb-4">Happy Anniversary, My Love.</h3>
-            <p class="text-xl text-gray-700">
-                Here's to a lifetime of sunrises, secrets, and endless conversations.
+        <footer class="mt-12 pt-6 border-t-4 border-pink-300 text-center">
+            <h3 class="text-5xl font-great-vibes text-gradient mb-4 animate-heartbeat">Happy Anniversary, My Sweet Puntu!</h3>
+            <p class="text-2xl text-gray-700 font-playfair font-medium">
+                Here's to a lifetime of sunrises, secrets, and endless conversations. Always and forever.
             </p>
-            <p class="mt-6 text-2xl font-semibold text-rose-800">
-                Forever Yours, [Your Name]
+            <p class="mt-6 text-3xl font-semibold text-vibrant-pink">
+                — Forever Yours, Prakash Uncle &hearts;️
             </p>
         </footer>
 
@@ -121,13 +197,6 @@
     
     <!-- Simple JS for a subtle celebration effect -->
     <script>
-        const h1 = document.querySelector('h1');
-        
-        // Simple subtle animation on load
-        setTimeout(() => {
-            h1.classList.remove('animate-bounce-slow');
-        }, 3000);
-
         // Define a simple, slow bounce effect for the header
         const style = document.createElement('style');
         style.textContent = `
