@@ -1,118 +1,421 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-	<meta Charset="UTF-8">
-	<meta http-equiv="X-UA-Compatib1e" content="IE=edge">
-	<meta name"viewport" content=" width=device-width, initial-scale=1.0">
-	<title>Portfolio</title>
-	<link href="./styles.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Er. Prakash Bhattarai | Engineering Multiverse</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
+            --bg-dark: #050b18;
+            --accent: var(--neon-blue);
+        }
+
+        body { 
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* --- MODES --- */
+
+        /* Blueprint Mode */
+        .mode-blueprint {
+            --bg-dark: #001a33;
+            --accent: #00f2ff;
+            background-image: linear-gradient(rgba(0, 242, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 242, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .mode-blueprint * { border-color: rgba(0, 242, 255, 0.3) !important; color: #00f2ff !important; text-shadow: 0 0 5px #00f2ff; }
+
+        /* Civil Engineering Mode */
+        .mode-civil {
+            --bg-dark: #2d241e;
+            --accent: #f59e0b;
+            background-image: repeating-linear-gradient(45deg, #f59e0b 0, #f59e0b 10px, #000 10px, #000 20px);
+            background-size: 100% 5px;
+            background-repeat: no-repeat;
+            background-position: top;
+        }
+        .mode-civil .glass { background: rgba(45, 36, 30, 0.9); border: 2px solid #f59e0b; border-radius: 0; }
+        .mode-civil * { color: #fef3c7 !important; }
+
+        /* Public Service Mode (Old Nepal Gov Vibes) */
+        .mode-gov {
+            --bg-dark: #f4f1ea;
+            font-family: 'Noto Serif Devanagari', 'Times New Roman', serif;
+        }
+        .mode-gov .glass { background: #fff; border: 1px solid #991b1b; box-shadow: 2px 2px 0 #991b1b; color: #1e293b; backdrop-filter: none; }
+        .mode-gov * { color: #1e293b !important; border-color: #991b1b !important; }
+        .mode-gov .text-neon-blue, .mode-gov .text-neon-purple { color: #991b1b !important; }
+        .mode-gov nav { border-bottom: 3px double #991b1b; }
+
+        /* Error/Glitch Mode */
+        .mode-error {
+            --bg-dark: #1a0000;
+            animation: glitch-bg 0.2s infinite;
+        }
+        @keyframes glitch-bg {
+            0% { background-color: #1a0000; }
+            50% { background-color: #00001a; }
+            100% { background-color: #1a0000; }
+        }
+        .mode-error * { animation: glitch-text 0.3s infinite; color: #ff003c !important; }
+
+        @keyframes glitch-text {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        /* --- UI Elements --- */
+        .neon-border {
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+            border: 1px solid rgba(0, 242, 255, 0.5);
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scanlines::before {
+            content: " ";
+            display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            z-index: 9999; background-size: 100% 4px; pointer-events: none; opacity: 0.3;
+        }
+
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        .emoji-particle {
+            position: fixed; pointer-events: none; z-index: 10000; font-size: 24px;
+            animation: particle-fly 1.2s forwards ease-out;
+        }
+
+        @keyframes particle-fly {
+            0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tw-x), var(--tw-y)) scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        .click-flash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9998; background: white; opacity: 0;
+        }
+        .flash-active { animation: flash-anim 0.2s ease-out; }
+        @keyframes flash-anim { 0% { opacity: 0.3; } 100% { opacity: 0; } }
+    </style>
 </head>
-<body>
-	<div class="hero">
-		 <nav>
-			<a href="#"><img src=".\logo.png" class="logo"></a>
-			<ul>
-				<li><a href="#">HOME</a></li>
-				<li><a href="#About">ABOUT</a></li>
-				<li><a href="#Portfolio">PORTFOLIO</a></li>
-				<li><a href="#">SERVICES</a></li>
-				<li><a href="#">HIREME</a></li>
-			</ul>
-		</nav>
-		<div class="details">
-			<h1>I'm Prakash<span> Bhattarai</span></h1>
-			<p>This is my official portfolio website to show all the<br>
-				details and work experience as a Civil Engineer.
-			</p>
-			<a href=".\cv.pdf" target="_blank">Download CV</a>
-		</div>
-		
-		<div class="About" id="About">
-			<h1>About</h1>
-			<pre>
-Name		: Er. Prakash Bhattarai
-DOB		: 2057/02/28 BS (2000/06/10 AD)
-P. Address	: Pathari Shanishchare-3, Morang
-T. Address	: Gulariya -5, Bardiya
-Mobile		: <a href="tel:+9779819077641">9819077641</a>
-Email		: <a href="mailto:prakashbhattarai1234321@gmail.com" target="_blank">prakashbhattarai1234321@gmail.com</a>
-Blood Type	: O+
-			</pre>
-<h3>Emergency Contact Info</h3>
-			<pre>
-Name		: Yubaraj Bhattarai
-Relation		: Father
-Mobile		:9800956614, 9810424509
-Address		:Pathari Shanishchare-3, Morang
-			</pre>
-		</div>
-		
-		<div class="Portfolio" id="Portfolio">
-			<h1>Portfolio</h1>
-			<h2>Work Experience</h2>
-			<h3>18/08/2024 – Current<br>Department of Water Resource and Irrigation, Lalitpur, Nepal As Engineer</h3>
-			<pre>- Preparation of design, estimate, measurement bill, breakdown, etc.
-- Coordinate the work and workflow
-- Monitor and Control the work and workflow
-- Manage and maintain computer systems, networks, and software
-			</pre>
-			<h3>14/02/2023 – 12/04/2024<br>Pathari Shanishchare Municipality, Pathari Shanishchare, Nepal as Civil Engineer</h3>
-			<pre>- Preparation of design, estimate, measurement bill, breakdown, etc
-- Coordinate the work and workflow
-- Manage and maintain computer systems, networks, and software
-			</pre>
-			<h3>16/05/2023 – 12/04/2024<br>Shree Pagoda Secondary English School, Pathari Shanishchare - 3, Nepal<br>as Secondary Level Science Teacher</h3>
-			<pre>- Teach
-- Assign practical and report writing
-- Evaluate student performance
-			</pre>
-			<h2>Education and Training</h2>
-			<h3>15/10/2017 – 09/06/2022</h3>
-			<pre>Bachelor of Engineering
-Pulchowk Campus, Pulchowk, Lalitpur
-			</pre>
-			<h3>08/07/2021 – 01/08/2021</h3>
-			<pre>Structural Design With Etabs
-CESS-Nepal,Pulchowk, Lalitpur
-			</pre>
-			<h3>19/06/2015 – 01/09/2017</h3>
-			<pre>Intermediate of Science
-Shree Panchayat Secondary School, Pathari Shanishchare, Nepal
-			</pre>
-			<h3>18/04/2015 – 22/07/2015</h3>
-			<pre>Computer Operator
-Universal Institute, Urlabari, Nepal
-			</pre>
-			<h3>05/10/2023 – 14/10/2023</h3>
-			<pre>SIYB Trainer
-SIYB Nepal, Damak, Nepal
-			</pre>
-				
-		</div>
-		
-		<div class="images">
-			<img src="shape.png" class="shape">
-			<img src="me.png", class="me">
-		</div>
-		
-		<div class="images2">
-			<img src="shape.png" class="shape">
-			<img src="me2.png", class="me">
-		</div>
-		
-		<div class="images3">
-			<img src="shape2.png" class="shape">
-			<img src="me3.png", class="me">
-		</div>
+<body class="scanlines antialiased overflow-x-hidden mode-render" onclick="globalClickHandler(event)">
 
+    <div id="canvas-container"></div>
+    <div id="flash-overlay" class="click-flash"></div>
+
+    <!-- HUD / Navigation -->
+    <nav class="fixed w-full z-50 top-0 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass neon-border rounded-2xl px-6 py-3">
+            <a href="#" class="text-2xl font-bold tracking-tighter mono">
+                <span class="text-neon-blue">NODE</span>:PRAKASH<span class="animate-pulse text-neon-purple">_</span>
+            </a>
+            
+            <div class="hidden md:flex items-center space-x-6 mono text-xs uppercase tracking-widest">
+                <a href="#about" class="hover:text-neon-blue transition">Data_Log</a>
+                <a href="#experience" class="hover:text-neon-blue transition">Work</a>
+                <div class="h-4 w-px bg-white/20"></div>
+                <button id="mode-selector" class="px-4 py-2 bg-white/5 border border-white/20 rounded-lg hover:border-accent transition flex items-center gap-2">
+                    <i class="fas fa-layer-group"></i>
+                    <span id="current-mode-label">RENDER_MODE</span>
+                </button>
+            </div>
+
+            <button onclick="toggleError()" class="text-neon-purple hover:scale-125 transition">
+                <i class="fas fa-bug"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center pt-20">
+        <div class="max-w-7xl mx-auto px-4 w-full">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <div id="status-chip" class="inline-flex items-center space-x-2 glass px-3 py-1 rounded-full border border-neon-blue/30 text-neon-blue text-xs mono">
+                        <span class="w-2 h-2 bg-neon-green rounded-full animate-ping"></span>
+                        <span id="status-text">SYSTEM: OPTIMAL</span>
+                    </div>
+                    
+                    <h1 class="text-6xl md:text-8xl font-bold leading-none tracking-tight">
+                        STRUCTURAL <br/>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple" id="hero-title">INTEGRITY</span>
+                    </h1>
+                    
+                    <p class="text-xl text-slate-400 max-w-lg leading-relaxed mono border-l-2 border-neon-purple pl-6">
+                        Er. Prakash Bhattarai // Civil Engineer <br/>
+                        Structural Estimation | Design Architecture | Workflow Optimization
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="triggerExplosion(event)" class="px-8 py-4 bg-neon-blue text-black font-bold rounded-sm hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,242,255,0.5)]">
+                            LOAD_CV.EXE
+                        </button>
+                        <button onclick="cycleMode()" class="px-8 py-4 border border-white/20 hover:border-neon-purple transition-all rounded-sm flex items-center gap-2">
+                            NEXT_DIMENSION <i class="fas fa-random text-neon-purple"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative flex justify-center items-center">
+                    <div class="relative w-72 h-72 md:w-96 md:h-96 group">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-neon-blue/20 to-neon-purple/20 rounded-2xl blur-3xl animate-pulse"></div>
+                        <div class="relative z-10 w-full h-full glass neon-border rounded-2xl overflow-hidden p-2">
+                            <img 
+                                src="./me.png" 
+                                alt="Prakash" 
+                                class="w-full h-full object-cover rounded-xl filter grayscale group-hover:grayscale-0 transition-all duration-700"
+                                onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Prakash'"
+                            >
+                            <div class="absolute bottom-4 left-4 text-[10px] mono text-neon-blue bg-black/50 p-2">
+                                POS_Z: <span id="val-z">0.00</span><br/>
+                                MODE: <span id="active-mode">RENDER</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Blocks -->
+    <section id="about" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-4 grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 glass neon-border p-8 rounded-2xl relative overflow-hidden group hover:scale-[1.01] transition-transform">
+                <h2 class="text-3xl font-bold mb-8 mono uppercase tracking-widest text-accent">Core_Identity</h2>
+                <div class="grid md:grid-cols-2 gap-6 mono text-sm">
+                    <div class="p-4 border border-white/10 rounded-lg">
+                        <span class="block text-accent opacity-50 mb-1">DESIGNATION</span>
+                        <span class="text-xl font-bold">Prakash Bhattarai</span>
+                    </div>
+                    <div class="p-4 border border-white/10 rounded-lg">
+                        <span class="block text-accent opacity-50 mb-1">SPECIALIZATION</span>
+                        <span class="text-xl font-bold">Civil Engineering</span>
+                    </div>
+                </div>
+                <p class="mt-8 text-slate-400 text-lg leading-relaxed italic">
+                    "Transforming complex structural data into resilient infrastructure through precision estimation and innovative design protocols."
+                </p>
+            </div>
+
+            <div class="glass p-8 rounded-2xl border-l-4 border-neon-purple flex flex-col justify-center">
+                <div class="text-center">
+                    <div class="text-5xl font-bold text-neon-purple mb-2">O+</div>
+                    <div class="text-xs mono uppercase tracking-widest opacity-50">Blood_Type_Vitals</div>
+                    <div class="mt-8 pt-8 border-t border-white/10">
+                        <p class="text-sm mono text-accent">EMERGENCY_COMMS</p>
+                        <p class="font-bold text-lg">9800956614</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="py-32 bg-black/20">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-4xl font-bold mb-16 text-center mono">WORK_HISTORY</h2>
+            <div class="space-y-12">
+                <div class="glass p-8 rounded-2xl border-r-4 border-neon-blue group hover:translate-x-2 transition-all cursor-pointer" onclick="randomAction()">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-bold">Engineer</h3>
+                        <span class="px-3 py-1 bg-neon-blue/20 text-neon-blue rounded text-xs">2024-PRESENT</span>
+                    </div>
+                    <p class="text-neon-blue mono text-sm mb-4">Department of Water Resource & Irrigation</p>
+                    <ul class="text-slate-400 text-sm space-y-2">
+                        <li>• Structural design and cost estimation</li>
+                        <li>• Project synchronization & workflow monitoring</li>
+                    </ul>
+                </div>
+                
+                <div class="glass p-8 rounded-2xl border-r-4 border-white/10 opacity-60 hover:opacity-100 transition-all">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-bold">Civil Engineer</h3>
+                        <span class="px-3 py-1 bg-white/10 text-slate-400 rounded text-xs">2023-2024</span>
+                    </div>
+                    <p class="text-neon-purple mono text-sm mb-4">Pathari Shanishchare Municipality</p>
+                    <p class="text-slate-400 text-sm">Urban infrastructure development and municipal project oversight.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Footer -->
+    <footer id="contact" class="py-20 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="mono text-center md:text-left">
+                <h3 class="text-2xl font-bold text-neon-blue mb-2">INIT_CONNECTION</h3>
+                <p class="text-slate-500 text-sm">prakashbhattarai1234321@gmail.com</p>
+            </div>
+            
+            <div class="flex gap-4">
+                <button onclick="cycleMode()" class="w-12 h-12 rounded-full glass flex items-center justify-center hover:scale-110 transition">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <a href="tel:+9779819077641" class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-neon-green/20 transition">
+                    <i class="fas fa-phone"></i>
+                </a>
+            </div>
+        </div>
+        <div class="text-center mt-12 text-[10px] mono opacity-30 uppercase tracking-[0.5em]">
+            Bardiya, Nepal // 28.3949 N, 84.1240 E
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. Mode Engine ---
+        let currentModeIndex = 0;
+        const modes = ['render', 'blueprint', 'civil', 'gov', 'error'];
+        const modeLabels = ['RENDER_MODE', 'BLUEPRINT_MODE', 'CIVIL_ENG_MODE', 'PUBLIC_SERVICE_MODE', 'SYSTEM_FAILURE'];
+        
+        function cycleMode() {
+            currentModeIndex = (currentModeIndex + 1) % (modes.length - 1); // Exclude manual error mode from normal cycle
+            applyMode(modes[currentModeIndex]);
+        }
+
+        function toggleError() {
+            applyMode('error');
+            setTimeout(() => applyMode(modes[currentModeIndex]), 3000);
+        }
+
+        function applyMode(mode) {
+            document.body.classList.remove(...modes.map(m => 'mode-' + m));
+            document.body.classList.add('mode-' + mode);
+            document.getElementById('current-mode-label').innerText = modeLabels[modes.indexOf(mode)];
+            document.getElementById('active-mode').innerText = mode.toUpperCase();
+            
+            // Randomly flash screen on mode change
+            document.getElementById('flash-overlay').classList.add('flash-active');
+            setTimeout(() => document.getElementById('flash-overlay').classList.remove('flash-active'), 200);
+            
+            triggerExplosion({ clientX: window.innerWidth/2, clientY: window.innerHeight/2 });
+        }
+
+        // --- 2. Global Interaction Engine ---
+        function globalClickHandler(e) {
+            // 1. Particle Burst
+            triggerExplosion(e);
+            
+            // 2. Random Visual Action
+            const actions = [
+                () => { // Flash
+                    const flash = document.getElementById('flash-overlay');
+                    flash.classList.add('flash-active');
+                    setTimeout(() => flash.classList.remove('flash-active'), 200);
+                },
+                () => { // Shake
+                    document.body.style.transform = `translate(${(Math.random()-0.5)*10}px, ${(Math.random()-0.5)*10}px)`;
+                    setTimeout(() => document.body.style.transform = 'translate(0,0)', 100);
+                },
+                () => { // Invert Randomly
+                    document.documentElement.style.filter = 'invert(1)';
+                    setTimeout(() => document.documentElement.style.filter = 'invert(0)', 150);
+                },
+                () => { // Status update
+                    const status = document.getElementById('status-text');
+                    const msgs = ['INTERACTION_LOGGED', 'CACHE_PURGED', 'DOM_REBUILT', 'UI_REFRESHED'];
+                    status.innerText = msgs[Math.floor(Math.random()*msgs.length)];
+                }
+            ];
+            
+            actions[Math.floor(Math.random() * actions.length)]();
+        }
+
+        function triggerExplosion(e) {
+            const emojis = ['🏗️', '📐', '🚀', '🏙️', '🚧', '🔩', '⚙️', '💎', '🇳🇵', '🏛️'];
+            for(let i = 0; i < 8; i++) {
+                const p = document.createElement('div');
+                p.className = 'emoji-particle';
+                p.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                const x = (Math.random() - 0.5) * 500;
+                const y = (Math.random() - 0.5) * 500;
+                p.style.left = `${e.clientX}px`;
+                p.style.top = `${e.clientY}px`;
+                p.style.setProperty('--tw-x', `${x}px`);
+                p.style.setProperty('--tw-y', `${y}px`);
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1200);
+            }
+        }
+
+        // --- 3. THREE.JS Visualization ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.IcosahedronGeometry(10, 1);
+        const wireMaterial = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0.2 });
+        const sphere = new THREE.Mesh(geometry, wireMaterial);
+        scene.add(sphere);
+
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsPositions = [];
+        for(let i = 0; i < 2000; i++) {
+            starsPositions.push(THREE.MathUtils.randFloatSpread(2000), THREE.MathUtils.randFloatSpread(2000), THREE.MathUtils.randFloatSpread(2000));
+        }
+        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsPositions, 3));
+        const starsMaterial = new THREE.PointsMaterial({ color: 0xbc13fe, size: 2 });
+        const starField = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starField);
+
+        camera.position.z = 100;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            sphere.rotation.y += 0.005;
+            sphere.rotation.x += 0.002;
+            starField.rotation.y += 0.0002;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            sphere.position.x = x;
+            sphere.position.y = -y;
+            document.getElementById('val-z').innerText = (Math.abs(x) + Math.abs(y)).toFixed(2);
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Mode Selector Button Click
+        document.getElementById('mode-selector').onclick = (e) => {
+            e.stopPropagation(); // Prevent global click from firing immediately
+            cycleMode();
+        };
+
+    </script>
 </body>
-
-<footer>Designed and created by <strong><em>Prakash Bhattarai.</em></strong>
-	<a href="https://www.facebook.com/prakash.bhattarai.18400" target="_blank" class="fa fa-facebook"></a>
-	<a href="https://www.instagram.com/prakash18400/" target="_blank" class="fa fa-instagram"></a>
-	<a href="mailto:prakashbhattarai1234321@gmail.com" target="_blank" class="fa fa-google"></a>
-	<a class="top" href="#top"><strong>TOP</strong></a>
-</footer>
 </html>
