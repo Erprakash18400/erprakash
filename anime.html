@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Log | Prakash Bhattarai</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --accent: #00f2ff;
+            --bg-dark: #050b18;
+            --power-color: #00f2ff;
+        }
+
+        body { 
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* --- POWER MODES --- */
+        .mode-quirk { --power-color: #ff3e3e; --bg-dark: #1a0505; }
+        .mode-chakra { --power-color: #39ff14; --bg-dark: #051a05; }
+        .mode-haki { --power-color: #bc13fe; --bg-dark: #0a0510; }
+        .mode-devilfruit { --power-color: #ff7600; --bg-dark: #1a0f05; }
+        .mode-cursed { --power-color: #000000; --bg-dark: #0d0d0d; border: 1px solid #333; }
+        .mode-ki { --power-color: #facc15; --bg-dark: #101005; }
+        .mode-reishi { --power-color: #60a5fa; --bg-dark: #050a1a; }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .anime-card:hover {
+            border-color: var(--power-color);
+            box-shadow: 0 0 20px var(--power-color);
+            transform: translateY(-5px);
+        }
+
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        .particle {
+            position: fixed; pointer-events: none; z-index: 10000;
+            animation: fly 1s forwards ease-out;
+        }
+
+        @keyframes fly {
+            0% { transform: translate(0,0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tw-x), var(--tw-y)) scale(0); opacity: 0; }
+        }
+
+        .scanlines::before {
+            content: " ";
+            display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            z-index: 9999; background-size: 100% 4px; pointer-events: none; opacity: 0.2;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px var(--power-color);
+        }
+
+        .error-shake {
+            animation: shake 0.2s ease-in-out 0s 2;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            50% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="scanlines antialiased" onclick="spawnParticles(event)">
+
+    <div id="canvas-container"></div>
+
+    <!-- HUD -->
+    <nav class="fixed w-full z-50 top-0 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass rounded-2xl px-6 py-3 border-white/10">
+            <div class="flex items-center gap-6">
+                <a href="index.html" class="flex items-center gap-2 text-xs mono opacity-70 hover:opacity-100 transition hover:text-[var(--power-color)]">
+                    <i class="fas fa-arrow-left"></i> RETURN_TO_CORE
+                </a>
+                <a href="#" class="text-xl font-bold tracking-tighter mono">
+                    <span style="color: var(--power-color)">ANIME</span>:DATABASE<span class="animate-pulse">_LOG</span>
+                </a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button onclick="triggerAnimeError(event)" class="text-xl opacity-50 hover:opacity-100 hover:text-red-500 transition px-2">
+                    <i class="fas fa-bug"></i>
+                </button>
+                <div class="hidden md:block text-[10px] mono text-right opacity-50">
+                    SENSING_ENERGY...<br/>
+                    <span id="power-lvl">LEVEL: 9001</span>
+                </div>
+                <button id="power-toggle" onclick="cyclePower(event)" class="px-4 py-2 glass rounded-lg border-white/20 hover:border-white transition flex items-center gap-2 mono text-xs">
+                    <i class="fas fa-bolt" id="power-icon"></i>
+                    <span id="power-label">INITIALIZING...</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="pt-32 pb-10 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-5xl md:text-7xl font-bold mb-4 glow-text" id="main-title">THE WATCHLIST</h1>
+            <p class="mono text-slate-400 max-w-2xl mx-auto">
+                Synchronizing across the multiverse. Cataloging watched series and read mangas from different dimensions.
+            </p>
+        </div>
+    </header>
+
+    <!-- Filter/Tabs -->
+    <div class="max-w-7xl mx-auto px-4 mb-12 flex justify-center gap-4">
+        <button onclick="filterType('all')" class="px-6 py-2 glass rounded-full text-xs mono hover:bg-white/10">ALL_ENTRIES</button>
+        <button onclick="filterType('anime')" class="px-6 py-2 glass rounded-full text-xs mono hover:bg-white/10">ANIME_ONLY</button>
+        <button onclick="filterType('manga')" class="px-6 py-2 glass rounded-full text-xs mono hover:bg-white/10">MANGA_ONLY</button>
+        <button onclick="filterType('movie')" class="px-6 py-2 glass rounded-full text-xs mono hover:bg-white/10">MOVIE_ONLY</button>
+        <button onclick="filterType('webseries')" class="px-6 py-2 glass rounded-full text-xs mono hover:bg-white/10">WEBSERIES_ONLY</button>
+    </div>
+
+    <!-- Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 pb-32">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="anime-grid">
+            <!-- Cards will be injected here -->
+        </div>
+    </main>
+
+    <!-- Restored Footer -->
+	
+    <footer id="contact" class="py-20 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="mono text-center md:text-left">
+                <h3 class="text-2xl font-bold text-neon-blue mb-2">INIT_CONNECTION</h3>
+                <p class="text-slate-500 text-sm">prakashbhattarai1234321@gmail.com</p>
+            </div>
+            
+            <div class="flex gap-4">
+                <button onclick="cycleMode()" class="w-12 h-12 rounded-full glass flex items-center justify-center hover:scale-110 transition">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <!-- WhatsApp -->
+				<a href="https://wa.me/9779819077641" target="_blank"
+				   class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-green-500/20 transition">
+					<i class="fab fa-whatsapp"></i>
+				</a>
+
+				<!-- Facebook -->
+				<a href="https://facebook.com/prakashbhattarai18400" target="_blank"
+				   class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-blue-600/20 transition">
+					<i class="fab fa-facebook-f"></i>
+				</a>
+
+				<!-- Instagram -->
+				<a href="https://instagram.com/prakash18400" target="_blank"
+				   class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-pink-500/20 transition">
+					<i class="fab fa-instagram"></i>
+				</a>
+
+				<!-- LinkedIn -->
+				<a href="https://linkedin.com/in/prakash-bhattarai-322882157" target="_blank"
+				   class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-sky-600/20 transition">
+					<i class="fab fa-linkedin-in"></i>
+				</a>
+
+				<!-- GitHub -->
+				<a href="https://github.com/Erprakash18400" target="_blank"
+				   class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-gray-500/20 transition">
+					<i class="fab fa-github"></i>
+				</a>
+
+				<!-- Email -->
+				<a href="mailto:prakashbhattarai1234321@gmail.com" target="_blank"
+				   class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-red-500/20 transition">
+					<i class="fas fa-envelope"></i>
+				</a>
+
+				<!-- Viber -->
+				<a href="viber://chat?number=9779819077641" target="_blank"
+				   class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-purple-500/20 transition">
+					<i class="fab fa-viber"></i>
+				</a>
+            </div>
+        </div>
+        <div class="text-center mt-12 text-[10px] mono opacity-30 uppercase tracking-[0.5em]">
+            <a href="https://maps.app.goo.gl/Pq3QxWSyPf4sCk2b6" target="_blank">Morang, Nepal // 26° 38' 05.8" N 87° 35' 16.1" E</a>
+        </div>
+    </footer>
+
+    <script>
+        const powerSystems = [
+            { id: 'reishi', label: 'REISHI_FLOW', color: 0x60a5fa, emoji: '❄️', title: 'SOUL SOCIETY LOG' },
+            { id: 'quirk', label: 'QUIRK_ACTIVATED', color: 0xff3e3e, emoji: '💥', title: 'HERO REGISTRY' },
+            { id: 'chakra', label: 'CHAKRA_MODE', color: 0x39ff14, emoji: '🍃', title: 'NINJA SCROLLS' },
+            { id: 'haki', label: 'HAKI_RELEASE', color: 0xbc13fe, emoji: '⚓', title: 'PIRATE BOUNTIES' },
+            { id: 'devilfruit', label: 'FRUIT_AWAKENING', color: 0xff7600, emoji: '🌀', title: 'GRAND LINE RECORDS' },
+            { id: 'cursed', label: 'CURSED_ENERGY', color: 0x333333, emoji: '💀', title: 'JUJUTSU ARCHIVES' },
+            { id: 'ki', label: 'KI_SURGE', color: 0xfacc15, emoji: '🔥', title: 'Z-FIGHTER DATA' }
+        ];
+
+        const animeErrors = [
+            "DOMAIN EXPANSION: INFINITE NULL POINTER!",
+            "ERROR: 404 - ONE PIECE NOT FOUND",
+            "QUIRK COLLAPSE: SYSTEM OVERLOAD!",
+            "CHAKRA EXHAUSTED: REBOOTING JUTSU...",
+            "CURSE DETECTED: PURGING MALWARE",
+            "WARNING: KI LEVEL OVER 9000!"
+        ];
+
+        let currentPowerIdx = 0;
+
+		
+        const animeData = [
+		
+		<!-- anime -->
+		
+            { title: "One Piece", type: "anime", status: "Watching", score: "10/10", tag: "Adventure" },
+            { title: "Naruto Shippuden", type: "anime", status: "Completed", score: "9/10", tag: "Ninja" },
+            { title: "Jujutsu Kaisen", type: "anime", status: "Watching", score: "9.5/10", tag: "Cursed" },
+            { title: "Bleach: TYBW", type: "anime", status: "Watching", score: "9/10", tag: "Soul" },
+            { title: "My Hero Academia", type: "anime", status: "Completed", score: "8.5/10", tag: "Hero" },
+            { title: "Dragon Ball Super", type: "anime", status: "Completed", score: "8/10", tag: "Battle" },
+			{ title: "Attack on Titan", type:"anime", status:"Completed", score:"10/10", tag:"Titan" },
+			{ title: "Demon Slayer", type:"anime", status:"Watching", score:"9/10", tag:"Sword" },
+			{ title: "Death Note", type:"anime", status:"Completed", score:"10/10", tag:"Mind" },
+			{ title: "Fullmetal Alchemist: Brotherhood", type:"anime", status:"Completed", score:"10/10", tag:"Alchemy" },
+			{ title: "Hunter x Hunter", type:"anime", status:"Completed", score:"9.5/10", tag:"Hunter" },
+			{ title: "Tokyo Ghoul", type:"anime", status:"Completed", score:"9/10", tag:"Dark" },
+			{ title: "Chainsaw Man", type:"anime", status:"Watching", score:"9/10", tag:"Devil" },
+			{ title: "Black Clover", type:"anime", status:"Incomplete", score:"8.5/10", tag:"Magic" },
+			{ title: "Vinland Saga", type:"anime", status:"Watching", score:"10/10", tag:"Viking" },
+			{ title: "Code Geass", type:"anime", status:"Completed", score:"10/10", tag:"Strategy" },
+			{ title: "Steins;Gate", type:"anime", status:"Completed", score:"10/10", tag:"Time" },
+			{ title: "Mob Psycho 100", type:"anime", status:"Completed", score:"9/10", tag:"Psychic" },
+			{ title: "Tokyo Revengers", type:"anime", status:"Watching", score:"8.5/10", tag:"Gang" },
+			{ title: "Blue Lock", type:"anime", status:"Watching", score:"9/10", tag:"Football" },
+			{ title: "Haikyuu", type:"anime", status:"Watching", score:"9/10", tag:"Sports" },
+			{ title: "Dr. Stone", type:"anime", status:"Watching", score:"9/10", tag:"Science" },
+			{ title: "Fire Force", type:"anime", status:"Watching", score:"8.5/10", tag:"Fire" },
+			{ title: "Erased", type:"anime", status:"Completed", score:"9/10", tag:"Mystery" },
+			{ title: "Akame ga Kill", type:"anime", status:"Watchlist", score:"8.5/10", tag:"Assassin" },
+			{ title: "Sword Art Online", type:"anime", status:"Incomplete", score:"8/10", tag:"VR" },
+			{ title: "Overlord", type:"anime", status:"Watchlist", score:"9/10", tag:"Isekai" },
+			{ title: "Re:Zero", type:"anime", status:"Watchlist", score:"9/10", tag:"Loop" },
+			{ title: "One Punch Man", type:"anime", status:"Watching", score:"9.5/10", tag:"Hero" },
+			{ title: "Gintama", type:"anime", status:"Watchlist", score:"9.5/10", tag:"Comedy" },
+			{ title: "Cyberpunk Edgerunners", type:"anime", status:"Watchlist", score:"9/10", tag:"Cyber" },
+			{ title: "Dororo", type:"anime", status:"Completed", score:"9/10", tag:"Samurai" },
+			{ title: "Monster", type:"anime", status:"Completed", score:"10/10", tag:"Psychological" },
+			{ title: "Zom 100", type:"anime", status:"Watching", score:"8.5/10", tag:"Zombie" },
+			{ title: "Hell's Paradise", type:"anime", status:"Watching", score:"9/10", tag:"Survival" },
+			{ title: "Ranking of Kings", type:"anime", status:"Watchlist", score:"9/10", tag:"Fantasy" },
+			{ title: "Devilman Crybaby", type:"anime", status:"Completed", score:"9/10", tag:"Chaos" },
+			{ title: "Made in Abyss", type:"anime", status:"Watchlist", score:"9.5/10", tag:"Adventure" },
+			{ title: "Tower of God", type:"anime", status:"Completed", score:"8.5/10", tag:"Tower" },
+			{ title: "Fate Zero", type:"anime", status:"Watchlist", score:"9.5/10", tag:"War" },
+			{ title: "Hellsing Ultimate", type:"anime", status:"Completed", score:"9.5/10", tag:"Vampire" },
+			{ title:"Pluto", type:"anime", status:"Completed", score:"9.5/10", tag:"Sci-Fi" },
+			
+		<!-- manga -->	
+			
+            { title: "Solo Leveling", type: "manga", status: "Read", score: "10/10", tag: "System" },
+            { title: "Vagabond", type: "manga", status: "Reading", score: "10/10", tag: "Samurai" },
+            { title: "Berserk", type: "manga", status: "Reading", score: "10/10", tag: "Dark" },
+			{ title: "The Beginning After The End", type:"manga", status:"Reading", score:"9.5/10", tag:"Rebirth" },
+			{ title: "Tower of God", type:"manga", status:"Read", score:"9/10", tag:"Tower" },
+			
+		<!-- movie -->
+			
+			{ title: "Inception", type:"movie", status:"Watched", score:"10/10", tag:"Mind" },
+			{ title: "Interstellar", type:"movie", status:"Watched", score:"10/10", tag:"Space" },
+			{ title: "The Dark Knight", type:"movie", status:"Watched", score:"10/10", tag:"Crime" },
+			{ title: "Fight Club", type:"movie", status:"Watched", score:"9.5/10", tag:"Psychology" },
+			{ title: "The Matrix", type:"movie", status:"Watched", score:"10/10", tag:"Simulation" },
+			{ title: "Joker", type:"movie", status:"Watched", score:"9.5/10", tag:"Madness" },
+			{ title: "Avengers: Endgame", type:"movie", status:"Watched", score:"9/10", tag:"Superhero" },
+			{ title: "Avengers: Infinity War", type:"movie", status:"Watched", score:"9.5/10", tag:"Chaos" },
+			{ title: "Se7en", type:"movie", status:"Watched", score:"9.5/10", tag:"Crime" },
+			{ title: "Shutter Island", type:"movie", status:"Watched", score:"9.5/10", tag:"Twist" },
+			{ title: "Django Unchained", type:"movie", status:"Watched", score:"9/10", tag:"Revenge" },
+			{ title: "Forrest Gump", type:"movie", status:"Watched", score:"9.5/10", tag:"Life" },
+			{ title: "Saving Private Ryan", type:"movie", status:"Watched", score:"9.5/10", tag:"War" },
+			{ title: "John Wick", type:"movie", status:"Watched", score:"9/10", tag:"Assassin" },
+			{ title: "The Lord of the Rings: Return of the King", type:"movie", status:"Watched", score:"10/10", tag:"Epic" },
+			{ title: "The Lord of the Rings: Two Towers", type:"movie", status:"Watched", score:"9.5/10", tag:"Battle" },
+			{ title: "The Lord of the Rings: Fellowship", type:"movie", status:"Watched", score:"9.5/10", tag:"Quest" },
+			{ title: "Blade Runner 2049", type:"movie", status:"Watched", score:"9.5/10", tag:"Cyberpunk" },
+			{ title: "Mad Max: Fury Road", type:"movie", status:"Watched", score:"9/10", tag:"Post-Apocalyptic" },
+			{ title: "The Social Network", type:"movie", status:"Watched", score:"9/10", tag:"Tech" },
+			{ title: "The Departed", type:"movie", status:"Watched", score:"9/10", tag:"Mafia" },
+			{ title: "Parasite", type:"movie", status:"Watched", score:"9.5/10", tag:"Class" },
+			{ title: "American Psycho", type:"movie", status:"Watched", score:"9/10", tag:"Dark" },
+			{ title: "The Truman Show", type:"movie", status:"Watched", score:"9.5/10", tag:"Reality" },
+			{ title: "The Godfather", type:"movie", status:"Watched", score:"10/10", tag:"Mafia" },
+			{ title: "The Godfather Part II", type:"movie", status:"Watched", score:"10/10", tag:"Legacy" },
+			{ title: "Logan", type:"movie", status:"Watched", score:"9.5/10", tag:"Tragedy" },
+			{ title: "Deadpool", type:"movie", status:"Watched", score:"8.5/10", tag:"Comedy" },
+			{ title: "Arrival", type:"movie", status:"Watched", score:"9.5/10", tag:"Alien" },
+			{ title: "Tenet", type:"movie", status:"Watched", score:"8.5/10", tag:"Time" },
+			{ title: "A Quiet Place", type:"movie", status:"Watched", score:"8.5/10", tag:"Survival"}, 
+			{ title: "The Sixth Sense", type:"movie", status:"Watched", score:"9/10", tag:"Twist" },
+			{ title: "Edge of Tomorrow", type:"movie", status:"Watched", score:"9/10", tag:"Loop" },			
+			{ title: "Breaking Bad", type:"webseries", status:"Completed", score:"10/10", tag:"Crime" },
+			{ title: "Game of Thrones", type:"webseries", status:"Completed", score:"9/10", tag:"Politics" },
+			{ title: "The Boys", type:"webseries", status:"Watching", score:"9.5/10", tag:"Antihero" },
+			{ title: "Stranger Things", type:"webseries", status:"Watching", score:"9/10", tag:"Mystery" },
+			{ title: "The Witcher", type:"webseries", status:"Watching", score:"8.5/10", tag:"Fantasy" },
+			{ title: "Chernobyl", type:"webseries", status:"Completed", score:"10/10", tag:"Disaster" },
+			{ title: "The Punisher", type:"webseries", status:"Completed", score:"9/10", tag:"Vigilante" },
+			{ title: "Loki", type:"webseries", status:"Completed", score:"9/10", tag:"Multiverse" },
+			{ title: "House of the Dragon", type:"webseries", status:"Watching", score:"9/10", tag:"Dragon" },
+			{ title: "Daredevil", type:"webseries", status:"Completed", score:"9.5/10", tag:"Justice" }
+        ];
+
+        function renderGrid(filter = 'all') {
+            const grid = document.getElementById('anime-grid');
+            grid.innerHTML = '';
+            
+            const filtered = filter === 'all' ? animeData : animeData.filter(d => d.type === filter);
+            
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `anime-card glass p-6 rounded-2xl border-white/5 relative overflow-hidden group cursor-crosshair`;
+                card.innerHTML = `
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition">
+                        <i class="fas ${item.type === 'anime' ? 'fa-tv' : 'fa-book-open'} text-2xl"></i>
+                    </div>
+                    <div class="mb-4">
+                        <span class="text-[10px] mono px-2 py-1 bg-white/10 rounded uppercase tracking-widest">${item.type}</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 group-hover:text-[var(--power-color)] transition">${item.title}</h3>
+                    <div class="flex justify-between items-end mt-6">
+                        <div class="mono text-xs opacity-50">
+                            STATUS: ${item.status}<br/>
+                            GENRE: ${item.tag}
+                        </div>
+                        <div class="text-xl font-bold" style="color: var(--power-color)">${item.score}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterType(type) {
+            renderGrid(type);
+        }
+
+        function triggerAnimeError(e) {
+            if(e) e.stopPropagation();
+            document.body.classList.add('error-shake');
+            setTimeout(() => document.body.classList.remove('error-shake'), 400);
+
+            const msg = animeErrors[Math.floor(Math.random() * animeErrors.length)];
+            const errorBox = document.createElement('div');
+            errorBox.className = 'fixed top-20 right-10 glass p-4 border-red-500/50 text-red-500 mono text-xs z-[100] animate-bounce';
+            errorBox.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i> ${msg}`;
+            document.body.appendChild(errorBox);
+            setTimeout(() => errorBox.remove(), 2000);
+        }
+
+        function cyclePower(e) {
+            if(e) e.stopPropagation();
+            currentPowerIdx = (currentPowerIdx + 1) % powerSystems.length;
+            const p = powerSystems[currentPowerIdx];
+            
+            document.body.className = `scanlines antialiased mode-${p.id}`;
+            document.getElementById('power-label').innerText = p.label;
+            document.getElementById('main-title').innerText = p.title;
+            document.getElementById('power-lvl').innerText = `LEVEL: ${Math.floor(Math.random() * 9000) + 1000}`;
+            
+            starMaterial.color.setHex(p.color);
+            sphereMaterial.color.setHex(p.color);
+
+            const flash = document.createElement('div');
+            flash.className = 'fixed inset-0 bg-white z-[60] pointer-events-none opacity-20';
+            document.body.appendChild(flash);
+            setTimeout(() => flash.remove(), 100);
+        }
+
+        function spawnParticles(e) {
+            const p = powerSystems[currentPowerIdx];
+            for(let i=0; i<6; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle mono text-xl';
+                particle.innerText = p.emoji;
+                particle.style.left = e.clientX + 'px';
+                particle.style.top = e.clientY + 'px';
+                
+                const vx = (Math.random() - 0.5) * 300;
+                const vy = (Math.random() - 0.5) * 300;
+                particle.style.setProperty('--tw-x', `${vx}px`);
+                particle.style.setProperty('--tw-y', `${vy}px`);
+                
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+
+        // --- Three.js Background ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const starGeo = new THREE.BufferGeometry();
+        const starCount = 3000;
+        const posArray = new Float32Array(starCount * 3);
+        for(let i=0; i<starCount*3; i++) posArray[i] = (Math.random() - 0.5) * 1000;
+        starGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const starMaterial = new THREE.PointsMaterial({ size: 1.5, color: 0x00f2ff });
+        const stars = new THREE.Points(starGeo, starMaterial);
+        scene.add(stars);
+
+        const sphereGeo = new THREE.IcosahedronGeometry(20, 1);
+        const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0.1 });
+        const sphere = new THREE.Mesh(sphereGeo, sphereMaterial);
+        scene.add(sphere);
+
+        camera.position.z = 100;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            stars.rotation.y += 0.0005;
+            sphere.rotation.x += 0.002;
+            sphere.rotation.z += 0.001;
+            renderer.render(scene, camera);
+        }
+
+        window.onload = () => {
+            renderGrid();
+            cyclePower();
+            animate();
+        };
+
+        window.onresize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+    </script>
+</body>
+</html>
