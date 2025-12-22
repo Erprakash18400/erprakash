@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prakash | Content Suggestion Portal</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
+            --neon-red: #ff003c;
+            --neon-gold: #ffd700;
+            --neon-pink: #ff00ea;
+            --bg-dark: #050b18;
+            --accent: var(--neon-blue);
+        }
+
+        body { 
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* --- RENDER MODES --- */
+
+        /* SCI-FI MODE (Default) */
+        .mode-scifi {
+            --bg-dark: #050b18;
+            --accent: #00f2ff;
+        }
+
+        /* HORROR MODE */
+        .mode-horror {
+            --bg-dark: #0a0000;
+            --accent: #ff0000;
+            filter: sepia(0.3) contrast(1.2);
+        }
+        .mode-horror .glass { border-color: rgba(255, 0, 0, 0.3); }
+        .mode-horror h1, .mode-horror .text-neon-blue { color: #ff0000 !important; text-shadow: 0 0 10px #660000; }
+
+        /* MAGICAL MODE */
+        .mode-magical {
+            --bg-dark: #0f0518;
+            --accent: #ffd700;
+        }
+        .mode-magical .glass { border-color: rgba(255, 215, 0, 0.3); box-shadow: 0 0 20px rgba(255, 215, 0, 0.1); }
+        .mode-magical h1, .mode-magical .text-neon-blue { color: #ffd700 !important; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+
+        /* GLITCHY MODE */
+        .mode-glitchy {
+            --bg-dark: #000;
+            --accent: #bc13fe;
+        }
+        .mode-glitchy * { animation: glitch-anim 4s infinite; }
+        @keyframes glitch-anim {
+            0% { transform: skew(0deg); }
+            1% { transform: skew(10deg); filter: hue-rotate(90deg); }
+            2% { transform: skew(-10deg); }
+            3% { transform: skew(0deg); }
+        }
+
+        /* ROMANCE MODE */
+        .mode-romance {
+            --bg-dark: #1a050d;
+            --accent: #ff00ea;
+        }
+        .mode-romance .glass { border-color: rgba(255, 0, 234, 0.3); }
+        .mode-romance h1, .mode-romance .text-neon-blue { color: #ff00ea !important; }
+
+        /* --- UI ELEMENTS --- */
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
+        }
+
+        .neon-border {
+            box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.2);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 16px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        }
+
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        
+        .scanlines::before {
+            content: " ";
+            display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            z-index: 9999; background-size: 100% 4px; pointer-events: none; opacity: 0.2;
+        }
+    </style>
+</head>
+<body class="scanlines antialiased mode-scifi">
+
+    <div id="canvas-container"></div>
+
+    <!-- Header (Same as index.html) -->
+    <nav class="fixed w-full z-50 top-0 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass rounded-2xl px-6 py-3 border border-white/10">
+            <!-- Clickable logo to cycle render modes -->
+            <span class="text-2xl font-bold tracking-tighter mono focus:outline-none group">
+                <span class="text-neon-blue group-hover:animate-pulse" id="nav-logo-text">NODE</span>:SUGGEST<span class="animate-pulse text-neon-purple">_V2</span>
+            </span>
+            
+            <div class="hidden md:flex items-center space-x-6 mono text-xs uppercase tracking-widest">
+                <a href="index.html" class="hover:text-neon-blue transition">Main_Hub</a>
+                <div class="h-4 w-px bg-white/20"></div>
+				<button onclick="toggleError()" class="text-neon-purple hover:scale-125 transition">
+					<i class="fas fa-bug"></i>
+				</button>
+                <div class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2">
+                    <button id="mode-trigger">
+						<i class="fas fa-sync-alt animate-spin-slow"></i>
+						<span id="current-mode-label">SCI-FI_MODE</span>
+					</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative min-h-screen pt-32 pb-20 flex items-center justify-center">
+        <div class="max-w-2xl w-full px-4">
+            <div class="glass p-8 md:p-12 rounded-3xl border border-white/10 relative overflow-hidden">
+                <!-- Background Glow -->
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-neon-blue/10 rounded-full blur-3xl"></div>
+                
+                <div class="relative z-10 text-center mb-10">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">CONTENT_ARCHIVE</h1>
+                    <p class="text-slate-400 mono text-sm uppercase tracking-widest">Submit your recommendations for the multiverse library</p>
+                </div>
+
+                <form id="suggestion-form" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] mono text-slate-500 mb-2 uppercase tracking-widest">Sender_Name</label>
+                            <input type="text" id="name" required class="input-field" placeholder="John Doe">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] mono text-slate-500 mb-2 uppercase tracking-widest">Email_ID</label>
+                            <input type="email" id="email" required class="input-field" placeholder="john@multiverse.com">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] mono text-slate-500 mb-2 uppercase tracking-widest">Content_Title</label>
+                        <input type="text" id="suggestion" required class="input-field" placeholder="Interstellar / Solo Leveling...">
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] mono text-slate-500 mb-2 uppercase tracking-widest">Category</label>
+                            <select id="category" class="input-field appearance-none bg-slate-900">
+                                <option value="Movie">Movie</option>
+                                <option value="Anime">Anime</option>
+                                <option value="Web Series">Web Series</option>
+                                <option value="Manga">Manga</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] mono text-slate-500 mb-2 uppercase tracking-widest">Genre</label>
+                            <input type="text" id="genre" required class="input-field" placeholder="Thriller, Action...">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-[10px] mono text-slate-500 uppercase tracking-widest">Rating_Metric</label>
+                            <span id="rating-val" class="text-neon-blue mono font-bold">5/10</span>
+                        </div>
+                        <input type="range" id="rating" min="1" max="10" step="0.5" value="5" 
+                               class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-neon-blue">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] mono text-slate-500 mb-2 uppercase tracking-widest">Additional_Details (No Spoilers)</label>
+                        <textarea id="details" rows="3" class="input-field resize-none" placeholder="Explain why this content is worth watching/reading..."></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 bg-neon-blue text-black font-bold rounded-lg hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_20px_rgba(0,242,255,0.3)] mono tracking-widest">
+                        UPLOAD_DATA.EXE <i class="fab fa-whatsapp ml-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (Same as index.html) -->
+    <footer class="py-12 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="mono text-center md:text-left">
+                <h3 class="text-xl font-bold text-neon-blue mb-1 uppercase">Sync_Port</h3>
+                <p class="text-slate-500 text-xs">Waiting for incoming packets...</p>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="https://wa.me/9779819077641" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-green-500/20 transition"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://facebook.com/prakashbhattarai18400" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-blue-600/20 transition"><i class="fab fa-facebook-f"></i></a>
+                <a href="mailto:prakashbhattarai1234321@gmail.com" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-red-500/20 transition"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. Three.js Background Initialization ---
+        let sphereMaterial;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+        sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0.15 });
+        const mesh = new THREE.Mesh(geometry, sphereMaterial);
+        scene.add(mesh);
+
+        const particlesGeom = new THREE.BufferGeometry();
+        const particlesPos = [];
+        for(let i=0; i<1000; i++) {
+            particlesPos.push((Math.random()-0.5)*150, (Math.random()-0.5)*150, (Math.random()-0.5)*150);
+        }
+        particlesGeom.setAttribute('position', new THREE.Float32BufferAttribute(particlesPos, 3));
+        const particlesMat = new THREE.PointsMaterial({ size: 0.5, color: 0xffffff, transparent: true, opacity: 0.5 });
+        const particles = new THREE.Points(particlesGeom, particlesMat);
+        scene.add(particles);
+
+        camera.position.z = 40;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            mesh.rotation.x += 0.002;
+            mesh.rotation.y += 0.003;
+            particles.rotation.y += 0.0005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- 2. Render Mode Cycle Engine ---
+        const modes = [
+            { id: 'scifi', label: 'SCI-FI_MODE', color: 0x00f2ff },
+            { id: 'horror', label: 'HORROR_MODE', color: 0xff0000 },
+            { id: 'magical', label: 'MAGICAL_MODE', color: 0xffd700 },
+            { id: 'glitchy', label: 'GLITCH_MODE', color: 0xbc13fe },
+            { id: 'romance', label: 'ROMANCE_MODE', color: 0xff00ea }
+        ];
+        
+        let currentModeIdx = 0;
+
+        function updateMode(manual = false) {
+            const body = document.body;
+            const mode = modes[currentModeIdx];
+            
+            // Remove previous classes
+            modes.forEach(m => body.classList.remove('mode-' + m.id));
+            
+            // Add new mode
+            body.classList.add('mode-' + mode.id);
+            document.getElementById('current-mode-label').innerText = mode.label;
+            
+            // Update 3D sphere color
+            if(sphereMaterial) sphereMaterial.color.setHex(mode.color);
+            
+            currentModeIdx = (currentModeIdx + 1) % modes.length;
+
+            // If manual click, reset the interval to prevent double-switching too fast
+            if (manual) {
+                clearInterval(modeInterval);
+                modeInterval = setInterval(() => updateMode(false), 10000);
+            }
+        }
+
+        // Initialize mode logic
+        updateMode();
+        let modeInterval = setInterval(() => updateMode(false), 10000);
+
+        // Click event for the logo button
+        document.getElementById('mode-trigger').addEventListener('click', () => {
+            updateMode(true);
+        });
+
+        // --- 3. Rating UI update ---
+        const ratingInput = document.getElementById('rating');
+        const ratingVal = document.getElementById('rating-val');
+        ratingInput.addEventListener('input', () => {
+            ratingVal.innerText = `${ratingInput.value}/10`;
+        });
+
+        // --- 4. WhatsApp Redirect Logic ---
+        document.getElementById('suggestion-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const suggestion = document.getElementById('suggestion').value;
+            const category = document.getElementById('category').value;
+            const genre = document.getElementById('genre').value;
+            const rating = document.getElementById('rating').value;
+            const details = document.getElementById('details').value;
+
+            const message = `*✨ NEW CONTENT SUGGESTION ✨*%0A%0A` +
+                            `*From:* ${name}%0A` +
+                            `*Email:* ${email}%0A%0A` +
+                            `*🎬 Title:* ${suggestion}%0A` +
+                            `*📂 Category:* ${category}%0A` +
+                            `*🏷️ Genre:* ${genre}%0A` +
+                            `*⭐ Rating:* ${rating}/10%0A%0A` +
+                            `*📝 Details:* ${details ? details : 'N/A'}%0A%0A` +
+                            `_Sent via Suggestion Portal_`;
+
+            const whatsappUrl = `https://wa.me/9779819077641?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        });
+		
+		
+		function toggleError() {
+			const glitchIndex = modes.findIndex(m => m.id === 'glitchy');
+			if (glitchIndex === -1) return;
+
+			currentModeIdx = glitchIndex;
+			updateMode(true);
+		}
+		
+    </script>
+</body>
+</html>
