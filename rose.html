@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Rose Day, My Love</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rose-pink: #ff4d6d;
+            --soft-blush: #fff0f3;
+            --deep-red: #c9184a;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--soft-blush);
+            font-family: 'Quicksand', sans-serif;
+            color: var(--deep-red);
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .font-romantic { font-family: 'Dancing Script', cursive; }
+        .font-cute { font-family: 'Pacifico', cursive; }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s;
+            z-index: 10;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .page.hidden {
+            transform: translateY(100vh);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .btn-love {
+            background: var(--rose-pink);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+            margin-top: 1rem;
+            border: none;
+        }
+
+        .btn-love:hover {
+            transform: scale(1.05) translateY(-2px);
+            background: var(--deep-red);
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .rose-emoji {
+            font-size: 5rem;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+        }
+
+        #game-rose {
+            position: absolute;
+            cursor: pointer;
+            font-size: 2.5rem;
+            transition: all 0.2s ease;
+            user-select: none;
+            z-index: 50;
+        }
+
+        .hidden-content { display: none; }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <!-- Page 1: Welcome -->
+    <div id="page1" class="page">
+        <div class="glass-card floating">
+            <div class="rose-emoji">🌹</div>
+            <h1 class="font-cute text-4xl md:text-5xl mt-4">Happy Rose Day!</h1>
+            <p class="mt-4 text-lg">Hey favorite human, I have something special for you...</p>
+            <button class="btn-love" onclick="showPage(2)">Open My Heart 💖</button>
+        </div>
+    </div>
+
+    <!-- Page 2: The Why -->
+    <div id="page2" class="page hidden">
+        <div class="glass-card">
+            <h2 class="font-romantic text-4xl mb-6">Why You?</h2>
+            <div class="space-y-4 text-left italic">
+                <p>✨ Because you make the world brighter.</p>
+                <p>🌷 Because your smile is my favorite view.</p>
+                <p>❤️ Because you're the rose in my garden of life.</p>
+            </div>
+            <button class="btn-love" onclick="showPage(3)">Next Secret 💌</button>
+        </div>
+    </div>
+
+    <!-- Page 3: Interactive Game -->
+    <div id="page3" class="page hidden">
+        <div class="glass-card">
+            <h2 class="font-cute text-3xl mb-2">Catch My Love!</h2>
+            <p class="mb-4 text-sm">Tap the rose 5 times to unlock the final surprise!</p>
+            <div id="game-container" class="h-40 w-full relative border-2 border-dashed border-pink-300 rounded-xl overflow-hidden">
+                <div id="game-rose" onclick="handleRoseClick()">🌹</div>
+            </div>
+            <div id="score-text" class="mt-2 font-bold">Caught: 0/5</div>
+        </div>
+    </div>
+
+    <!-- Page 4: The Big Message -->
+    <div id="page4" class="page hidden">
+        <div class="glass-card">
+            <div class="text-6xl mb-4">💐</div>
+            <h2 class="font-romantic text-5xl mb-4">I Love You!</h2>
+            <p class="text-lg leading-relaxed">
+                Just like a rose, you are beautiful, unique, and you fill my life with fragrance. 
+                Thank you for being mine.
+            </p>
+            <p class="mt-6 font-cute text-2xl text-pink-600">— Your Always & Forever</p>
+            <button class="btn-love" onclick="explodeMore()">Shower More Roses! 🌹✨</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let score = 0;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor(x, y, isRose = false) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 20 + 10;
+                this.speedX = Math.random() * 6 - 3;
+                this.speedY = Math.random() * 6 - 3;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 5 - 2.5;
+                this.opacity = 1;
+                this.content = isRose ? '🌹' : (Math.random() > 0.5 ? '🌸' : '❤️');
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+                this.opacity -= 0.01;
+                if (this.size > 0.2) this.size -= 0.1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.size}px serif`;
+                ctx.fillText(this.content, -this.size/2, this.size/2);
+                ctx.restore();
+            }
+        }
+
+        function createExplosion(x, y, count = 15) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(x, y, Math.random() > 0.7));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].opacity <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function showPage(num) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            const nextPage = document.getElementById('page' + num);
+            nextPage.classList.remove('hidden');
+            
+            // Trigger explosion on transition
+            createExplosion(window.innerWidth/2, window.innerHeight/2, 30);
+            
+            if (num === 3) {
+                moveRose();
+            }
+        }
+
+        // Game Logic
+        function moveRose() {
+            const container = document.getElementById('game-container');
+            const rose = document.getElementById('game-rose');
+            const maxX = container.clientWidth - 50;
+            const maxY = container.clientHeight - 50;
+            
+            rose.style.left = Math.random() * maxX + 'px';
+            rose.style.top = Math.random() * maxY + 'px';
+        }
+
+        function handleRoseClick() {
+            score++;
+            document.getElementById('score-text').innerText = `Caught: ${score}/5`;
+            
+            const rose = document.getElementById('game-rose');
+            const rect = rose.getBoundingClientRect();
+            createExplosion(rect.left + 25, rect.top + 25, 10);
+            
+            if (score >= 5) {
+                setTimeout(() => showPage(4), 500);
+            } else {
+                moveRose();
+            }
+        }
+
+        function explodeMore() {
+            for(let i=0; i<5; i++) {
+                setTimeout(() => {
+                    createExplosion(
+                        Math.random() * window.innerWidth,
+                        Math.random() * window.innerHeight,
+                        20
+                    );
+                }, i * 200);
+            }
+        }
+
+        // Click to explode anywhere
+        window.addEventListener('mousedown', (e) => {
+            createExplosion(e.clientX, e.clientY, 8);
+        });
+
+        // Initialize
+        animate();
+        
+        // Initial floating roses
+        setInterval(() => {
+            if (particles.length < 50) {
+                particles.push(new Particle(Math.random() * window.innerWidth, window.innerHeight + 50));
+                particles[particles.length-1].speedY = -Math.random() * 2 - 1;
+            }
+        }, 800);
+
+    </script>
+</body>
+</html>
