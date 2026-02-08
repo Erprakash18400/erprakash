@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propose Day Surprise | Lil Sis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-pink: #ff75c3;
+            --secondary-purple: #9b51e0;
+            --soft-yellow: #fef08a;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+            padding: 20px;
+        }
+
+        .layer.hidden {
+            transform: translateY(100vh);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .layer.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .fancy-font {
+            font-family: 'Pacifico', cursive;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .btn-next {
+            background: white;
+            color: var(--primary-pink);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        .btn-next:hover {
+            transform: scale(1.1);
+            background: var(--primary-pink);
+            color: white;
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .nickname {
+            color: #d81b60;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+
+    <!-- Layer 1: Teasing Intro -->
+    <div id="layer1" class="layer active">
+        <div class="glass-card pulse">
+            <h1 class="text-5xl text-pink-600 mb-4">Oi, Drama Queen! 👋</h1>
+            <p class="text-lg text-gray-700">Yes, you... my favorite <span class="nickname">Monkey</span>! 🐒</p>
+            <p class="mt-2 text-pink-500 italic">I have a "serious" proposal for you today since it's Propose Day.</p>
+            <button class="btn-next" onclick="nextLayer(1)">Don't get too excited! 🙄</button>
+        </div>
+    </div>
+
+    <!-- Layer 2: The "Contract" Proposal -->
+    <div id="layer2" class="layer hidden">
+        <div class="glass-card">
+            <h1 class="text-4xl text-purple-600 mb-6">Will You Propose To...</h1>
+            <div class="text-6xl mb-6">🍕🧹🍫</div>
+            <p class="text-xl text-gray-800 leading-relaxed italic">
+                "Will you propose to <strong>NEVER</strong> touch my hoodies again and promise to make me Maggi whenever I'm lazy?" 
+            </p>
+            <p class="mt-4 text-sm text-gray-500">(Just kidding... mostly.)</p>
+            <button class="btn-next" onclick="nextLayer(2)">Wait, for real now... ✨</button>
+        </div>
+    </div>
+
+    <!-- Layer 3: The Sweet Part -->
+    <div id="layer3" class="layer hidden">
+        <div class="glass-card">
+            <h1 class="text-4xl text-pink-600 mb-4 fancy-font">A Brother's Vow 🤙</h1>
+            <p class="mb-4 text-gray-700">Okay, enough teasing. I actually wanted to say:</p>
+            <ul class="text-left text-gray-700 space-y-3 mb-6">
+                <li>✨ I'll always be your personal bodyguard.</li>
+                <li>🍭 I'll always share my treats (the ones I don't like).</li>
+                <li>🛡️ I'll always protect you from your own bad decisions.</li>
+                <li>💖 I'll always be the best brother you could ever have!</li>
+            </ul>
+            <button class="btn-next" onclick="nextLayer(3)">One Last Thing! 🎈</button>
+        </div>
+    </div>
+
+    <!-- Layer 4: Celebration -->
+    <div id="layer4" class="layer hidden">
+        <div class="glass-card">
+            <h1 class="text-6xl text-pink-600 mb-4 fancy-font">Happy Propose Day!</h1>
+            <p class="text-2xl text-purple-600 font-bold mb-4">To the world's most annoying Sis! 🏆</p>
+            <div class="text-7xl mb-6">🥳💐🍫🍭</div>
+            <p class="text-gray-600">You're stuck with me forever, kiddo. No returns, no exchanges!</p>
+            <button class="btn-next" onclick="resetLayers()">Annoy me again! 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const emojis = ['🌸', '🌺', '💖', '✨', '🍭', '🦋', '🎈', '🍫', '🐒', '🍕'];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor(x, y, isExplosion = false) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || (isExplosion ? y : canvas.height + 50);
+                this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                this.size = Math.random() * 20 + 15;
+                this.speedY = isExplosion ? (Math.random() - 0.5) * 12 : -Math.random() * 2 - 1;
+                this.speedX = isExplosion ? (Math.random() - 0.5) * 12 : (Math.random() - 0.5) * 2;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 2;
+                this.opacity = 1;
+                this.isExplosion = isExplosion;
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotationSpeed;
+                if (this.isExplosion) {
+                    this.opacity -= 0.015;
+                    this.speedY += 0.1; 
+                }
+                if (this.y < -50 && !this.isExplosion) {
+                    this.y = canvas.height + 50;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.size}px serif`;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillText(this.emoji, -this.size/2, this.size/2);
+                ctx.restore();
+            }
+        }
+
+        // Initialize background
+        for (let i = 0; i < 30; i++) {
+            particles.push(new Particle());
+        }
+
+        function createExplosion(x, y) {
+            for (let i = 0; i < 20; i++) {
+                particles.push(new Particle(x, y, true));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles = particles.filter(p => p.opacity > 0);
+            
+            const backgroundCount = particles.filter(p => !p.isExplosion).length;
+            if (backgroundCount < 30) particles.push(new Particle());
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        function nextLayer(current) {
+            const currentLayer = document.getElementById(`layer${current}`);
+            const nextLayer = document.getElementById(`layer${current + 1}`);
+            
+            // Explosion at click location
+            const event = window.event;
+            if(event) createExplosion(event.clientX, event.clientY);
+
+            currentLayer.classList.remove('active');
+            currentLayer.classList.add('hidden');
+            
+            setTimeout(() => {
+                nextLayer.classList.remove('hidden');
+                nextLayer.classList.add('active');
+            }, 300);
+        }
+
+        function resetLayers() {
+            createExplosion(window.innerWidth/2, window.innerHeight/2);
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`layer${i}`).classList.remove('active');
+                document.getElementById(`layer${i}`).classList.add('hidden');
+            }
+            setTimeout(() => {
+                document.getElementById('layer1').classList.remove('hidden');
+                document.getElementById('layer1').classList.add('active');
+            }, 500);
+        }
+
+        window.onload = animate;
+    </script>
+</body>
+</html>
