@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ETERNAL UNION OF PUNS & TOLEKUMAR</title>
+    <!-- We will use Google Fonts for elegance -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Great+Vibes&family=Noto+Emoji&display=swap" rel="stylesheet">
+    <style>
+        /* === MAIN PAGE STYLING === */
+        body {
+            /* Deep, beautiful blue from the letter's border */
+            background-color: #101c40; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll from effects */
+            position: relative;
+        }
+
+        /* Confetti Effect Container */
+        #confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Make clicks pass through */
+            z-index: -1; /* Place behind everything */
+        }
+
+        /* === THE CERTIFICATE FRAME === */
+        .certificate {
+            background-color: #fdfaf0; /* Aged parchment look */
+            width: 90%;
+            max-width: 900px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border-radius: 15px;
+            position: relative;
+            z-index: 10;
+            /* Border design inspired by Image 0 */
+            border: 20px solid transparent;
+            border-image: url(mrgcrt.png) 15% round;
+            padding: 40px;
+        }
+
+        /* === HEADER SECTION === */
+        .cert-header {
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .cert-header h1 {
+            font-family: 'Great Vibes', cursive;
+            color: #101c40;
+            font-size: 5rem;
+            margin: 0;
+        }
+        .cert-header p {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #d84315; /* Celebration color */
+            font-size: 1.5rem;
+            margin-top: -10px;
+        }
+        .cert-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* === CONTENT SECTIONS === */
+        .section {
+            margin-bottom: 30px;
+            opacity: 0; /* Start hidden for animation */
+            transform: translateY(20px);
+            animation: fadeIn 1s ease-out forwards;
+        }
+        .section.image-portrait {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -10px;
+        }
+        .section.images-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* The beautiful smiling couple */
+        .main-portrait img {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 10px solid gold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* The hidden/vow couple */
+        .secondary-image img {
+            width: 150px;
+            height: 150px;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 5px solid #101c40;
+        }
+
+        /* Text area - The declaration */
+        .declaration-text {
+            flex-grow: 1;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: #101c40;
+        }
+
+        .heart-emoji {
+            color: red;
+            font-family: 'Noto Emoji', sans-serif;
+        }
+
+        .cute-names {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: #d84315;
+            line-height: 1.6;
+        }
+
+        /* Letter highlight box */
+        .letter-vow-box {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            padding: 20px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 20px 0;
+            text-align: left;
+            position: relative;
+        }
+
+        /* Signature from the actual letter */
+        .yamuna-signature {
+            text-align: right;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        /* === FINAL QUOTES SECTION === */
+        .eternal-vows {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 2px solid #ccc;
+        }
+        .eternal-vows h2 {
+            font-size: 2rem;
+            color: #d84315;
+        }
+        .quote-list {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .quote-list li {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #333;
+            font-style: italic;
+        }
+        .quote-list li::before {
+            content: "💝 ";
+            font-family: 'Noto Emoji', sans-serif;
+        }
+        .quote-list li::after {
+            content: " 🥳";
+            font-family: 'Noto Emoji', sans-serif;
+        }
+
+        /* === STICKERS & DECORATIONS === */
+        .sticker-decoration {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+        /* Custom Sticker: Gold Headpiece from Portrait */
+        .sticker-headpiece {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-image: url(union.png);
+            background-size: 200%; /* ZOOM IN on her head */
+            background-position: top center;
+            border: 3px solid gold;
+            bottom: 50px;
+            left: -30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        /* Custom Sticker: Vow Hand from Letter */
+        .sticker-vow-hand {
+            width: 100px;
+            height: 80px;
+            background-image: url(mrgcrt.png);
+            background-size: 300%; /* ZOOM IN on "Will you be my..." area */
+            background-position: bottom center;
+            transform: rotate(-15deg);
+            top: 250px;
+            right: -40px;
+            opacity: 0.7;
+        }
+        /* Emoji Stickers */
+        .emoji-sticker {
+            font-size: 3rem;
+            font-family: 'Noto Emoji', sans-serif;
+            position: absolute;
+        }
+        .emoji-sticker.celebrate1 { top: 10px; left: -20px; }
+        .emoji-sticker.celebrate2 { bottom: 10px; right: -20px; }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Particle effect styling (for the JS section) */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: explode 2s ease-out;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(1) translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0) translate(var(--tx), var(--ty));
+                opacity: 0;
+            }
+        }
+
+        /* Trigger for fade-in section delays */
+        .section-portrait { animation-delay: 0.5s; }
+        .section-letter { animation-delay: 1s; }
+        .section-quotes { animation-delay: 1.5s; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Confetti Container -->
+    <div id="confetti-container"></div>
+
+    <!-- MAIN CERTIFICATE FRAME -->
+    <div class="certificate">
+        
+        <div class="cert-number"># FOREVER-1</div>
+
+        <!-- STICKERS & DECORATIONS (Placed absolutely within the certificate) -->
+        <div class="sticker-decoration sticker-headpiece" title="The Golden Headpiece Sticker"></div>
+        <div class="sticker-decoration sticker-vow-hand" title="The Handwritten Promise Sticker"></div>
+        <div class="emoji-sticker celebrate1">🥳🎉</div>
+        <div class="emoji-sticker celebrate2">💍💖</div>
+
+        <div class="cert-header section">
+            <p>CONGRATULATIONS ON THIS</p>
+            <h1>Eternal Union</h1>
+        </div>
+
+        <!-- SECTION 1: THE COUPLE PORTRAIT -->
+        <div class="section section-portrait image-portrait">
+            <div class="main-portrait">
+                <img src="union.png" alt="Smiling Couple Portrait">
+            </div>
+            <div class="declaration-text">
+                <h3>KNOW BY ALL PRESENTS</h3>
+                <p>that we, the signatories of life, have legally <span class="heart-emoji">💖</span> bound ourselves to be each other's person. <span class="heart-emoji">💖</span></p>
+            </div>
+        </div>
+
+        <!-- SECTION 2: THE VOWS (Image 0 extract) -->
+        <div class="section section-letter Images-container">
+            <div class="secondary-image">
+                <img src="vow.png" alt="Couple Hiding and Vowing">
+            </div>
+            <div class="declaration-text letter-vow-box">
+                "I cherish every <span class="heart-emoji">💖</span> memory, every place we've been, and every walk we took holding hands.<br>
+                <br>
+                On your special day, I have one proposal for you: <br>
+                <span class="heart-emoji">💖</span> 'Will you be my better half?' <span class="heart-emoji">💖</span>"
+                <div class="yamuna-signature"><span class="heart-emoji">💖</span> I love you so much.<br>Forever Yours,<br><em>Prakash</em></div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: THE CUTE NAMES & ETERNAL VOWS -->
+        <div class="section section-quotes eternal-vows">
+            <h2>Our Pacts for Infinity</h2>
+            
+            <div class="cute-names">
+                <strong>HER (The Sweetest Universe):</strong><br>
+                Cutegpt ✨ Puntu ✨ Funtus ✨ Ardhangini
+            </div>
+            <div class="cute-names" style="margin-top: 15px;">
+                <strong>HIM (The Rock of Joy):</strong><br>
+                Tolekumar ✨ Patiparmeshwor
+            </div>
+
+            <p style="font-family: 'Great Vibes', cursive; font-size: 2rem; margin-top: 20px;">
+                Our Eternal Promises:
+            </p>
+
+            <ul class="quote-list">
+                <li>A successful marriage requires falling in love many times, always with the same person.</li>
+                <li>When the world gets loud, we will find our silence in each other's eyes.</li>
+                <li>Never leave. Even when Cutegpt gives the wrong answers. Especially then.</li>
+                <li>Real love isn't just looking at each other; it’s looking together in the same direction... forever.</li>
+                <li>In sickness and in health, but especially in Tolekumar's mood swings, Cutegpt will be there.</li>
+                <li>We are two hearts that have officially declared: 'This is the last first date we will ever have.'</li>
+                <li>Always & Forever. No matter what. 🥳💍💖</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT FOR PARTICLE EFFECTS (Confetti) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#fdfaf0', '#d84315', '#101c40', '#gold']; // Confetti colors matching theme
+
+            // Create confetti function
+            function createConfetti() {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random position
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * -100 + 'vh'; // Start above viewport
+
+                // Random size and color
+                const size = Math.random() * 10 + 5 + 'px';
+                particle.style.width = size;
+                particle.style.height = size;
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                // Set custom translation variables for animation
+                particle.style.setProperty('--tx', Math.random() * 200 - 100 + 'px'); // X-translation
+                particle.style.setProperty('--ty', Math.random() * 200 + 100 + 'px'); // Y-translation (downward)
+
+                container.appendChild(particle);
+
+                // Remove particle after animation ends
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
+
+            // Explosion Effect on Load
+            // Start the sequence
+            setTimeout(() => {
+                const totalConfetti = 80;
+                let count = 0;
+                const interval = setInterval(() => {
+                    createConfetti();
+                    count++;
+                    if (count >= totalConfetti) {
+                        clearInterval(interval);
+                    }
+                }, 5); // Rapid explosion start
+            }, 500); // Small delay on load
+
+            // Continuous background shimmer
+            setInterval(() => {
+                createConfetti();
+            }, 300); // Shimmering continuous effect
+        });
+    </script>
+
+</body>
+</html>
